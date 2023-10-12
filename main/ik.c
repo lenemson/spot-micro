@@ -16,8 +16,8 @@ const float L = 207.5; // Spot body "length", distance between front and back sh
 const float W = 78.0;  // Spot body "width", distance between left and right shoulder
 
 /**
- * Calculates the inverse kinematic for one leg and for only one dimension (height)
- * therefore takes only height as input.
+ * Calculates the inverse kinematic for one leg and for only one dimension:
+ * shoulder joint to end effector length, therefore takes only one variable as input.
  * https://www.youtube.com/watch?v=wtf0RDwPl0c
  */
 void leg_height_ik(float height, float leg_angles[3])
@@ -33,8 +33,40 @@ void leg_height_ik(float height, float leg_angles[3])
     // We need to add 70 because in our calculations, upper leg angle
     // is 0 when in reality it is 70 degrees
     leg_angles[1] = upper_leg_angle + 70.0;
-    // When a leg is completly closed, the wrist servo is calibrated to be 0 degree but
-    // the actual leg links have an angle or 15.6 degrees, see it on this schematics:
-    // https://github.com/michaelkubina/SpotMicroESP32/blob/b192facc57606a074d5a535afebaf3f2a5523ee7/kinematics/L3.png
-    leg_angles[2] = wrist_angle + 15.6;
+
+    leg_angles[2] = wrist_angle;
+}
+
+/**
+ * Calculates the inverse kinematic in 2 dimensions, x and y.
+ * x allow the end effector to move forward and backward,
+ * y up and down.
+ *
+ *                 |
+ *                 |
+ *                 y
+ *                 |
+ * _______-x_______|_______x_______
+ *
+ * https://www.youtube.com/watch?v=3RHg6OJLYhM
+ * https://www.youtube.com/watch?v=1xFajou-J3I
+ * https://www.youtube.com/watch?v=IN8tjTk8ExI
+ */
+void leg_ik(float x, float y, float leg_angles[3])
+{
+    if (y == 0.0)
+        return;
+    if (x == 0.0)
+    {
+        leg_height_ik(y, leg_angles);
+    }
+    else
+    {
+        float theta0 = atanf(x / y);
+        float shoulder_foot_len = y / cosf(theta0);
+
+        leg_height_ik(shoulder_foot_len, leg_angles);
+
+        leg_angles[1] += theta0 * (180.0 / M_PI);
+    }
 }

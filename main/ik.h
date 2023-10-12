@@ -1,1 +1,1 @@
-void leg_height_ik(float height, float leg_angles[3]);
+void leg_ik(float x, float y, float leg_angles[3]);

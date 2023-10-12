@@ -5,7 +5,7 @@
 #define PCA9685_SDA_GPIO GPIO_NUM_18
 #define PCA9685_SCL_GPIO GPIO_NUM_19
 
-#define DEFAULT_DURATION_MS 10
+#define DEFAULT_DURATION_MS 1
 
 #define LEG_FL 0 // Front left leg
 #define LEG_FR 1 // Front right leg
